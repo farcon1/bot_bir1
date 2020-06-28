@@ -32,9 +32,9 @@ def main():
     all_base='C:/Users/nikita/Desktop/test/all.xlsx'
     con_base='C:/Users/nikita/Desktop/test/contact.xlsx'
     """
-    osn_base='bot_bir/database.xlsx'
-    all_base='bot_bir/all.xlsx'
-    con_base='bot_bir/contact.xlsx'
+    osn_base='bot_bir1/database.xlsx'
+    all_base='bot_bir1/all.xlsx'
+    con_base='bot_bir1/contact.xlsx'
     
     bot=telebot.TeleBot('1292714271:AAFto5D4qOOmTbRDfYVY28DQguWr3FJWKlc')   #бот для принятия анкет и для отправки других
     bot_checker = telebot.TeleBot('1147234538:AAHFUcJE44cGiFFBISV5YCtK8TggG2Jf9ps') #бот для проверки анкет
