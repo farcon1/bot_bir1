@@ -35,7 +35,6 @@ def main():
     osn_base='bot_bir/database.xlsx'
     all_base='bot_bir/all.xlsx'
     con_base='bot_bir/contact.xlsx'
-
     
     bot=telebot.TeleBot('1292714271:AAFto5D4qOOmTbRDfYVY28DQguWr3FJWKlc')   #бот для принятия анкет и для отправки других
     bot_checker = telebot.TeleBot('1147234538:AAHFUcJE44cGiFFBISV5YCtK8TggG2Jf9ps') #бот для проверки анкет
@@ -61,15 +60,20 @@ def main():
     keyboard_network_type.row("YouTube")
     keyboard_network_type.row("Tik-Tok")
     keyboard_network_type.row("Вконтакте")
+    keyboard_network_type.row("Facebook")
     keyboard_network_type.row("🔛 Начать с начала 🔛")
     
     
     keyboard_category_ad = telebot.types.ReplyKeyboardMarkup(True, True)
-    keyboard_category_ad.row("Личный блог")
-    keyboard_category_ad.row("Блог")                 #клавиатура для определения категории рекламы
-    keyboard_category_ad.row("Магазин/ресторан")
-    keyboard_category_ad.row("Группа")
+    keyboard_category_ad.row("Блог")  
+    keyboard_category_ad.row("Магазин/ресторан")   #клавиатура для определения категории рекламы
+    keyboard_category_ad.row("Юмор")
+    keyboard_category_ad.row("Ставки/спорт/казино")
+    keyboard_category_ad.row("Контент 18+") 
+    keyboard_category_ad.row("Новости/статьи")
+    keyboard_category_ad.row("Познавательный/образовательный контент")
     keyboard_category_ad.row("Остальное")
+    keyboard_category_ad.row("Разное")    
     keyboard_category_ad.row("🔛 Начать с начала 🔛")
     
     
@@ -100,7 +104,6 @@ def main():
                     bot.send_message(message.from_user.id, "Вот, что умеет делать бот",reply_markup=keyboard_start)
                 if message.text=='/search':
                     if test_in_main(message.from_user.id,osn_base):
-                        #bot.send_message(message.from_user.id,"Находится в разработке")
                         bot.send_message(message.from_user.id,"Введите ID Вашей анкеты")
                         bot.register_next_step_handler(message, podbor)
                     else:
@@ -144,15 +147,18 @@ def main():
                 statystics_buyer = sheet["E"+stroka].value
                 info_buyer = sheet["F"+stroka].value
                 category_ad_buyer = sheet["G"+stroka].value        
-                price_buyer=sheet["H"+stroka].value   
+                price_buyer=sheet["H"+stroka].value  
+                inf_buyer=sheet["I"+stroka].value  
                 
-                s="📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_buyer + '\n' + "👨‍💻 2.Никнейм: " + name_buyer + '\n'  "👥 3."+ subscribers_buyer + " подписчиков"+ '\n' + "📊 4.Статистика профиля: " + statystics_buyer + '\n' + "🗺 5.Информация об аудитории: " + info_buyer + '\n' + "📄 6.Категория рекламы: " + category_ad_buyer + '\n' + "💰 7. Максимальная стоимость рекламы: "+ price_buyer
+                
+                
+                s="📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_buyer + '\n' + "👨‍💻 2.Никнейм: " + name_buyer + '\n'  "👥 3."+ subscribers_buyer + " подписчиков"+ '\n' + "📊 4.Статистика профиля: " + statystics_buyer + '\n' + "🗺 5.Информация об аудитории: " + info_buyer + '\n' + "📄 6.Категория рекламы: " + category_ad_buyer + '\n' + "💰 7. Максимальная стоимость рекламы: "+ price_buyer + '\n' + "💬 8. Краткая информация о канале/аккаунте: "+ inf_buyer
             else:
                 sheet=wb["0"] 
                 
                 stroka=get_stroka_po_ankete(anketa,all_base)
             
-                type_=int(sheet["L"+stroka].value)
+                type_=int(sheet["O"+stroka].value)
                 network_type_advertiser=sheet["B"+stroka].value
                 name_advertiser=sheet["C"+stroka].value
                 subscribers_advertiser=sheet["D"+stroka].value
@@ -163,19 +169,21 @@ def main():
                 category_ad_advertiser=sheet["I"+stroka].value
                 price_advertiser=sheet["J"+stroka].value
                 barter_advertiser=sheet["K"+stroka].value
+                inf_advertiser=sheet["L"+stroka].value
+                
                 #print(price_advertiser)
                 if type_==3:
                     qwe=price_advertiser.split(",")
                 if int(barter_advertiser)!=0:
                     if type_ == 3:
-                        s="📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Информация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ qwe[0] + '\n' + "💰 Стоимость сторис: " +qwe[1]+'\n' + "💰 Стоимость вечного поста: " + qwe[2] + '\n' + "♻️ 10. Возможность бартера при разнице подписчиков: "+str(barter_advertiser)  
+                        s="📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Информация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ qwe[0] + '\n' + "💰 Стоимость сторис: " +qwe[1]+'\n' + "💰 Стоимость вечного поста: " + qwe[2] + '\n' + "♻️ 10. Возможность бартера при разнице подписчиков: "+str(barter_advertiser)  + '\n' + "💬 11. Краткая информация о канале/аккаунте: "+ inf_advertiser
                     elif type_ == 1:
-                        s= "📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Информация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ price_advertiser + '\n' + "♻️ 10. Возможность бартера при разнице подписчиков: "+  str(barter_advertiser)
+                        s= "📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Информация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ price_advertiser + '\n' + "♻️ 10. Возможность бартера при разнице подписчиков: "+  str(barter_advertiser)+ '\n' + "💬 11. Краткая информация о канале/аккаунте: "+ inf_advertiser
                 else:
                     if type_ == 3:
-                        s= "📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Информация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ qwe[0] + '\n' + "💰 Стоимость сторис: " +qwe[1]+'\n' + "💰 Стоимость вечного поста: " + qwe[2] 
+                        s= "📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Информация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ qwe[0] + '\n' + "💰 Стоимость сторис: " +qwe[1]+'\n' + "💰 Стоимость вечного поста: " + qwe[2] + '\n' + "💬 10. Краткая информация о канале/аккаунте: "+ inf_advertiser
                     elif type_ == 1:
-                        s= "📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Инфомация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ price_advertiser 
+                        s= "📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_advertiser + '\n' + "👨‍💻 2.Никнейм: " + name_advertiser + '\n' + "👥 3.Количество подписчиков: " + subscribers_advertiser + '\n' + "📊 4.Статистика профиля: " + statystics_advertiser + '\n' + "🗺 5.Инфомация об аудитории: " + info_advertiser + '\n' + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'+ "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' + "💰 9. Стоимость рекламного поста: "+ price_advertiser + '\n' + "💬 10. Краткая информация о канале/аккаунте: "+ inf_advertiser
                     
                 
                 
@@ -610,26 +618,20 @@ def main():
         #print("test0 "+str(a))
         for i in range(2,a):
             if str(sheet["N"+str(i)].value)=="1":
-                #print(str(sheet["B"+str(i)].value)+reklam[1])
-                if str(sheet["B"+str(i)].value)==str(reklam[1]):
-                    #print("test1")
-                    #print(sheet["I"+str(i)].value,reklam[2])
-                    if str(sheet["G"+str(i)].value)==str(reklam[2]):
-                        #print("test2")
-                        
-                        if check_price(str(sheet["H"+str(i)].value),reklam[3]):
-                            if test_date(sheet["Q"+str(i)].value):
-                                keyboard_ask = telebot.types.InlineKeyboardMarkup()
-                                button_accept = telebot.types.InlineKeyboardButton(text ="Согласен✅", callback_data = 'ok '+inf[-1]+" "+str(sheet["Q"+str(i)].value))
-                                button_refusal = telebot.types.InlineKeyboardButton(text ="Не подходит❌", callback_data= 'no '+inf[-1]+" "+str(sheet["Q"+str(i)].value))
-                                keyboard_ask.add(button_accept)
-                                keyboard_ask.add(button_refusal)
-                                st=str(get_stroka_po_ankete(str(sheet["Q"+str(i)].value),osn_base))
-                                #bot.send_message(id_send,from_list_to_str_1(get_info_po_ankete(list_ank[number_ank_now],osn_base)),reply_markup=keyboard_ask)
-                                sheet[str("L"+st)].value="time"
-                                sheet[str("M"+st)].value="time"
-                                wb.save(osn_base)
-                                bot.send_message(int(sheet["A"+str(i)].value),"Внимание! Для Вас(анкета №"+str(sheet["Q"+str(i)].value)+") найден новый рекламодатель!\n\n"+from_list_to_str_1(get_info_po_ankete(reklam[-1],osn_base)),reply_markup=keyboard_ask)
+                #if str(sheet["B"+str(i)].value)==str(reklam[1]):
+                if str(sheet["G"+str(i)].value)==str(reklam[2]):
+                    if check_price(str(sheet["H"+str(i)].value),reklam[3]):
+                        if test_date(sheet["Q"+str(i)].value):
+                            keyboard_ask = telebot.types.InlineKeyboardMarkup()
+                            button_accept = telebot.types.InlineKeyboardButton(text ="Согласен✅", callback_data = 'ok '+inf[-1]+" "+str(sheet["Q"+str(i)].value))
+                            button_refusal = telebot.types.InlineKeyboardButton(text ="Не подходит❌", callback_data= 'no '+inf[-1]+" "+str(sheet["Q"+str(i)].value))
+                            keyboard_ask.add(button_accept)
+                            keyboard_ask.add(button_refusal)
+                            st=str(get_stroka_po_ankete(str(sheet["Q"+str(i)].value),osn_base))
+                            sheet[str("L"+st)].value="time"
+                            sheet[str("M"+st)].value="time"
+                            wb.save(osn_base)
+                            bot.send_message(int(sheet["A"+str(i)].value),"Внимание! Для Вас(анкета №"+str(sheet["Q"+str(i)].value)+") найден новый рекламодатель!\n\n"+from_list_to_str_1(get_info_po_ankete(reklam[-1],osn_base)),reply_markup=keyboard_ask)
     
     
     
@@ -642,7 +644,7 @@ def main():
         s=str(s+"🗺 Инфомация об аудитории: " +str(l[5])+"\n")
         s=str(s+"📄 Категория рекламы: "+str(l[6])+"\n")
         s=str(s+"💰 Максимальная стоимость рекламы: "+str(l[7])+"\n")
-        
+        s=str(s+"💬 Краткая информация о канале/аккаунте: "+str(l[8])+"\n")
         return s
     
     def send_to_reklam(anketa,reklam_ank):#Кто согласился(покупатель) ; на какую анкету(рекламодатель)
@@ -687,6 +689,7 @@ def main():
             sheet2['I'+str(num2)].value = sheet1['I'+str(num1)].value
             sheet2['J'+str(num2)].value = sheet1['J'+str(num1)].value
             sheet2['K'+str(num2)].value = sheet1['K'+str(num1)].value
+            sheet2['L'+str(num2)].value = sheet1['L'+str(num1)].value
             sheet2['Q'+str(num2)].value = sheet1['Q'+str(num1)].value
             sheet2["Z1"]=num2+1        
         else:
@@ -703,6 +706,8 @@ def main():
             sheet2['F'+str(num2)].value = sheet1['F'+str(num1)].value
             sheet2['G'+str(num2)].value = sheet1['G'+str(num1)].value
             sheet2['H'+str(num2)].value = sheet1['H'+str(num1)].value
+            sheet2['I'+str(num2)].value = sheet1['I'+str(num1)].value
+            
             sheet2['Q'+str(num2)].value = sheet1['Q'+str(num1)].value
             sheet2["Z1"]=num2+1  
             
@@ -741,7 +746,9 @@ def main():
             elif i==9:
                 s=str(s+"💰 Цена: "+str(l[i])+"\n")
             if i==10:
-                s=str(s+"♻ Бартер: "+str(test_barter(l[i])))   
+                s=str(s+"♻ Бартер: "+str(test_barter(l[i]))+"\n")   
+            if i==11:
+                s=str(s+"💬 Краткая информация о канале/аккаунте: "+str(l[i]))
         return s
     def test_anketa(anketa):
         l=anketa.split(".")
@@ -781,10 +788,7 @@ def main():
                 if inp_anketa.split(".")[0]=="1":
                     if check_true_id(inp_anketa,message.from_user.id,osn_base):
                         if test_date(inp_anketa):
-                            #bot.send_message(get_id_po_ankete(inp_anketa,osn_base),"ok")
-                            #bot.send_message(get_id_po_ankete(inp_anketa,osn_base),"test ok")
                             res=selection(inp_anketa,osn_base)
-                            #bot.send_message(get_id_po_ankete(inp_anketa,osn_base),len(res))
                             wb = openpyxl.load_workbook(filename = osn_base)
                             sheet= wb['1']        
                             st=str(get_stroka_po_ankete(inp_anketa,osn_base))
@@ -833,6 +837,8 @@ def main():
                     result.append(sheet['I'+str(i)].value) 
                     result.append(sheet['J'+str(i)].value) 
                     result.append(sheet['K'+str(i)].value)   
+                    result.append(sheet['L'+str(i)].value)   
+                    
                     result.append(sheet['Q'+str(i)].value) 
         if l[0]=="1":
             sheet = wb["1"]
@@ -848,6 +854,8 @@ def main():
                     result.append(sheet['F'+str(i)].value) 
                     result.append(sheet['G'+str(i)].value) 
                     result.append(sheet['H'+str(i)].value)   
+                    result.append(sheet['I'+str(i)].value)   
+                    
                     result.append(sheet['Q'+str(i)].value) 
         if t!=0:
             return result
@@ -859,27 +867,27 @@ def main():
         
         
         lis=get_info_po_ankete(anketa_pokup,database)
-        id_application_buyer_=lis[8]
-        network_type_buyer_=lis[1]
-        subscribers_buyer_=lis[3]
-        statystics_buyer_=lis[4]
-        name_buyer_=lis[2]
-        info_buyer_=lis[5]
+        #id_application_buyer_=lis[8]
+        #network_type_buyer_=lis[1]
+        #subscribers_buyer_=lis[3]
+        #statystics_buyer_=lis[4]
+        #name_buyer_=lis[2]
+        #info_buyer_=lis[5]   #изменено
         category_ad_buyer_=lis[6]
         price_buyer_=lis[7]
         
         
         wb = openpyxl.load_workbook(filename = database)
         sheet_ranges = wb['0']
-        column_id = sheet_ranges['A']
+        #column_id = sheet_ranges['A']
         column_category = sheet_ranges['I']
         column_price = sheet_ranges['J']
-        column_barter = sheet_ranges['K']
-        column_subs = sheet_ranges['D']
-        column_name = sheet_ranges['C']
-        column_info = sheet_ranges['F']
-        column_stats = sheet_ranges['E']
-        column_self_category =  sheet_ranges['H']
+        #column_barter = sheet_ranges['K']
+        #column_subs = sheet_ranges['D']
+        #column_name = sheet_ranges['C']
+        #column_info = sheet_ranges['F']
+        #column_stats = sheet_ranges['E']
+        #column_self_category =  sheet_ranges['H']
         result=[]
         
         sheet_ranges_1 = wb['0']
@@ -888,11 +896,14 @@ def main():
         for i in range(2,num):
             
             if str(sheet_ranges_1["N"+str(i)].value)=="1":
-                if sheet_ranges_1["B"+str(i)].value==network_type_buyer_ and category_ad_buyer_ == column_category[i-1].value:
+                #if sheet_ranges_1["B"+str(i)].value==network_type_buyer_ and category_ad_buyer_ == column_category[i-1].value:
+                if category_ad_buyer_ == column_category[i-1].value or column_category[i-1].value=="Разное" or category_ad_buyer_=="Разное":
                     if test_date(str(sheet_ranges_1["Q"+str(i)].value)):
                         if check_price(price_buyer_,column_price[i-1].value):
-                            result.append(sheet_ranges["Q"+str(i)].value)                
-        return result    
+                            result.append(sheet_ranges["Q"+str(i)].value)   
+        if len(result)!=0:
+            res= random.sample(result, len(result))
+        return res    
         
     
     def inst(s):
@@ -938,6 +949,24 @@ def main():
             wb.save(con_base)    
     """
     def check_price(a,b):
+        inst_b=1
+        if test_int(b):
+            inst_b=0
+        if inst_b==0:
+            if int(a)>=int(b):
+                return True
+            return False
+        else:
+            min_pr==10000000000
+            l=b.split(",")
+            for i in range(len(l)):
+                if l[i]!="-":
+                    if l[i]<min_pr:
+                        min_pr=l[i]
+            if int(min_pr)<=int(a):
+                return True
+            return False
+        """`
         if test_int(b):
             if int(a)>=int(b):
                 return True
@@ -957,7 +986,7 @@ def main():
         if rr!=0:
             return True
         return False
-        
+        """
     def get_last_anketa_po_tgid(id):
         wb = openpyxl.load_workbook(filename = con_base)
         sheet= wb["main"] 
@@ -1043,7 +1072,7 @@ def main():
                     sheet = wb[anketa.split(".")[0]]
                 
                     if test_date(anketa)==False:
-                        print(sheet["U"+str(get_stroka_po_ankete(anketa,osn_base))].value)
+                        #print(sheet["U"+str(get_stroka_po_ankete(anketa,osn_base))].value)
                         bot.send_message(message.from_user.id,"Ваша анкета действительна до "+str(sheet["U"+str(get_stroka_po_ankete(anketa,osn_base))].value)+"\nСрок действия Вашей анкеты закончился. Для продления обратитесь к администратору(@metand_2)",reply_markup = keyboard_start_again)
                     else:
                         bot.send_message(message.from_user.id,"Ваша анкета действительна до "+str(sheet["U"+str(get_stroka_po_ankete(anketa,osn_base))].value),reply_markup = keyboard_start_again)
@@ -1062,7 +1091,7 @@ def main():
     
     def test_date(anketa): #до какого времени
         l=anketa.split(".")
-        print("---------------------",l)
+        #print("---------------------",l)
         wb = openpyxl.load_workbook(osn_base)
         sheet=wb[str(l[0])]
         #print(anketa)
@@ -1166,7 +1195,7 @@ def main():
         else:
             get_start_message(message)         
             
-            
+       
     #ниже получаем никнейм
     def get_name_advertiser(message):
         if check_com(message)==0:
@@ -1177,9 +1206,9 @@ def main():
             anketa=get_last_anketa_po_tgid(message.from_user.id)
             sheet["C"+get_stroka_po_ankete(anketa,all_base)].value=name_advertiser
             wb.save(all_base)            
-            
-            bot.send_message(message.from_user.id, "👥 Введите количество подпиcчиков у вашего канала / аккаунта / профиля.",reply_markup = keyboard_start_again)
-            bot.register_next_step_handler(message, get_subscribers_advertiser)
+            #💬 Введите краткую информацию о контенте вашего канале/аккаунта 👥 Введите количество подпиcчиков у вашего канала / аккаунта / профиля.
+            bot.send_message(message.from_user.id, "💬 Введите краткую информацию о контенте вашего канале/аккаунта",reply_markup = keyboard_start_again)
+            bot.register_next_step_handler(message, get_inf_advertiser)
         else:
             get_start_message(message)     
     def get_name_buyer(message):
@@ -1192,12 +1221,41 @@ def main():
             sheet["C"+get_stroka_po_ankete(anketa,all_base)].value=name_buyer
             wb.save(all_base)         
             
-            bot.send_message(message.from_user.id, "👥 Введите количество подпиcчиков у вашего канала / аккаунта / профиля.",reply_markup = keyboard_start_again)
-            bot.register_next_step_handler(message, get_subscribers_buyer)
+            bot.send_message(message.from_user.id, "💬 Введите краткую информацию о контенте вашего канале/аккаунта",reply_markup = keyboard_start_again)
+            bot.register_next_step_handler(message, get_inf_buyer)
         else:
             get_start_message(message)        
+    def get_inf_advertiser(message): 
+        if check_com(message)==0:
+            inf_advertiser = str(message.text)
             
-    #ниже получаем количество подписчиков
+            wb = openpyxl.load_workbook(filename = all_base)
+            sheet=wb["0"]    
+            anketa=get_last_anketa_po_tgid(message.from_user.id)
+            sheet["L"+get_stroka_po_ankete(anketa,all_base)].value=inf_advertiser
+            wb.save(all_base)
+            bot.send_message(message.from_user.id, "👥 Введите количество подпиcчиков у вашего канала / аккаунта / профиля.",reply_markup = keyboard_start_again)
+            bot.register_next_step_handler(message, get_subscribers_advertiser)
+            #bot.send_message(message.from_user.id, "👨‍💻 Введите никнейм вашего канала / аккаунта / профиля.",reply_markup = keyboard_start_again)
+            #bot.register_next_step_handler(message, get_name_advertiser)
+        else:
+            get_start_message(message)  
+    def get_inf_buyer(message): 
+        if check_com(message)==0:
+            inf_buyer = str(message.text)
+            
+            wb = openpyxl.load_workbook(filename = all_base)
+            sheet=wb["1"]    
+            anketa=get_last_anketa_po_tgid(message.from_user.id)
+            sheet["I"+get_stroka_po_ankete(anketa,all_base)].value=inf_buyer
+            wb.save(all_base)
+            bot.send_message(message.from_user.id, "👥 Введите количество подпиcчиков у вашего канала / аккаунта / профиля.",reply_markup = keyboard_start_again)
+            bot.register_next_step_handler(message, get_subscribers_buyer)
+            #bot.send_message(message.from_user.id, "👨‍💻 Введите никнейм вашего канала / аккаунта / профиля.",reply_markup = keyboard_start_again)
+            #bot.register_next_step_handler(message, get_name_advertiser)
+        else:
+            get_start_message(message)  
+            #ниже получаем количество подписчиков
     def get_subscribers_advertiser(message):
         if check_com(message)==0:
             subscribers_advertiser = str(message.text)
@@ -1361,7 +1419,7 @@ def main():
             s=s+str(l[-1])
             sheet["J"+get_stroka_po_ankete(anketa,all_base)].value=s
             wb.save(all_base)        
-            print(sheet["J"+get_stroka_po_ankete(anketa,all_base)].value)
+            #print(sheet["J"+get_stroka_po_ankete(anketa,all_base)].value)
             
             bot.send_message(message.from_user.id, "♻️ Если вы готовы на бартер/коллаборацию, введите максимальное отличие подписчиков между Вами и покупателем, если нет, то введите 0",reply_markup = keyboard_start_again)
             bot.register_next_step_handler(message, application_advertiser)
@@ -1387,34 +1445,34 @@ def main():
                 type_ = 3
                 #bot.send_message(message.from_user.id, "💰 Введите стоимость рекламного поста, рекламной сторис, постоянного рекламного поста(пожалуйста, вводите цены в рублях и через запятую; если вы не предоставляете рекламы данного типа, то вместо стоимости введите 0. Например, '0,0,0' или '0,1000,1590')",reply_markup = types.ReplyKeyboardRemove(selective=False))
                 bot.send_message(message.from_user.id, "💰 Введите стоимость временного рекламного поста(пожалуйста, вводите цену в рублях\nEсли же вы не предоставляете рекламы данного типа, то вместо стоимости введите 0)",reply_markup = keyboard_start_again)
-                sheet["L"+get_stroka_po_ankete(anketa,all_base)].value=type_
+                sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
                 wb.save(all_base)   
                 bot.register_next_step_handler(message, price_adv_1)            
             elif network_type_advertiser == "Telegram":
                 type_ = 1
                 bot.send_message(message.from_user.id, "💰 Введите стоимость рекламного поста (пожалуйста, вводите цены в рублях)",reply_markup = keyboard_start_again)
-                sheet["L"+get_stroka_po_ankete(anketa,all_base)].value=type_
+                sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
                 
                 wb.save(all_base)   
                 bot.register_next_step_handler(message, price_adv)            
             elif network_type_advertiser == "YouTube":
                 type_ = 1
                 bot.send_message(message.from_user.id, "💰 Введите стоимость упоминания рекламного характера в видео(пожалуйста, вводите цены в рублях)",reply_markup = keyboard_start_again)
-                sheet["L"+get_stroka_po_ankete(anketa,all_base)].value=type_
+                sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
                 
                 wb.save(all_base)   
                 bot.register_next_step_handler(message, price_adv)            
             elif network_type_advertiser == "Tik-Tok":
                 type_ = 1
                 bot.send_message(message.from_user.id, "💰 Введите стоимость рекламной интеграциии(пожалуйста, вводите цену в рублях)",reply_markup = keyboard_start_again)
-                sheet["L"+get_stroka_po_ankete(anketa,all_base)].value=type_
+                sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
                 
                 wb.save(all_base)   
                 bot.register_next_step_handler(message, price_adv)            
             elif network_type_advertiser == "Вконтакте":
                 type_ = 1
                 bot.send_message(message.from_user.id, "💰 Введите стоимость рекламного поста(пожалуйста, вводите цену в рублях)",reply_markup = keyboard_start_again)
-                sheet["L"+get_stroka_po_ankete(anketa,all_base)].value=type_
+                sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
                 
                 wb.save(all_base)   
                 bot.register_next_step_handler(message, price_adv)            
@@ -1450,7 +1508,7 @@ def main():
             wb = openpyxl.load_workbook(filename = all_base)
             sheet=wb["0"]   
             anketa=get_last_anketa_po_tgid(message.from_user.id)
-            type_=sheet["L"+get_stroka_po_ankete(anketa,all_base)].value        
+            type_=sheet["O"+get_stroka_po_ankete(anketa,all_base)].value        
             
             if type_ == 3:
                 price_advertiser = price_advertiser.split(",")
@@ -1487,7 +1545,7 @@ def main():
             statystics_buyer = sheet["E"+stroka].value
             info_buyer = sheet["F"+stroka].value
             category_ad_buyer = sheet["G"+stroka].value
-            
+            inf_buyer = sheet["I"+stroka].value
             #s="📝 Ваша анкета: " + '\n' + "🌐 1.Социальная сеть: " + network_type_buyer + '\n' + "👨‍💻 2.Никнейм: " + name_buyer + '\n'  "👥 3."+ subscribers_buyer + "подписчиков"+ '\n' + "📊 4.Статистика профиля: " + statystics_buyer + '\n' + "🗺 5.Инфомация об аудитории: " + info_buyer + '\n' + "📄 6.Категория рекламы: " + category_ad_buyer + '\n' + "💰 7. Максимальная стоимость рекламы: "+ price_buyer + '\n' +'\n' + "Прошу обратить внимание, если во время проверки Вашего профиля, администрация сервера обнаружит несовпадение данных, Ваша заявка будет аннулирована." + '\n'  + "Ваша анкета составлена верно?"
             
             keyboard_answer = telebot.types.InlineKeyboardMarkup() #кнопки для подтверждения правильности анкеты клиентом
@@ -1504,7 +1562,8 @@ def main():
                              + "📊 4.Статистика профиля: " + statystics_buyer + '\n' 
                              + "🗺 5.Инфомация об аудитории: " + info_buyer + '\n' 
                              + "📄 6.Категория рекламы: " + category_ad_buyer + '\n' 
-                             + "💰 7. Максимальная стоимость рекламы: "+ price_buyer + '\n' +'\n' 
+                             + "💰 7. Максимальная стоимость рекламы: "+ price_buyer + '\n' 
+                             + "💬 8. Краткая информация о канале/аккаунте: "+ inf_buyer+ '\n' +'\n' 
                              + "Прошу обратить внимание, если во время проверки Вашего профиля, администрация сервера обнаружит несовпадение данных, Ваша заявка будет аннулирована." + '\n' 
                              + "Ваша анкета составлена верно?", 
                              reply_markup=keyboard_answer)
@@ -1534,7 +1593,7 @@ def main():
             
             stroka=get_stroka_po_ankete(anketa,all_base)
             
-            type_=int(sheet["L"+stroka].value)
+            type_=int(sheet["O"+stroka].value)
             network_type_advertiser=sheet["B"+stroka].value
             name_advertiser=sheet["C"+stroka].value
             subscribers_advertiser=sheet["D"+stroka].value
@@ -1544,6 +1603,7 @@ def main():
             self_category_ad=sheet["H"+stroka].value
             category_ad_advertiser=sheet["I"+stroka].value
             price_advertiser=sheet["J"+stroka].value
+            inf_advertiser=sheet["L"+stroka].value
             
             #print(price_advertiser)
             if type_==3:
@@ -1561,7 +1621,8 @@ def main():
                                      + "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' 
                                      + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' 
                                      + "💰 9. Стоимость рекламного поста: "+ qwe[0] + '\n' + "💰 Стоимость сторис: " +qwe[1]+'\n' + "💰 Стоимость вечного поста: " + qwe[2] + '\n' 
-                                     + "♻️ 10. Возможность бартера при разнице подписчиков: "+str(barter_advertiser)+'\n'+'\n' 
+                                     + "♻️ 10. Возможность бартера при разнице подписчиков: "+str(barter_advertiser)+'\n'
+                                     + "💬 11. Краткая информация о канале/аккаунте:: "+str(inf_advertiser)+'\n'+'\n' 
                                      +"Прошу обратить внимание, если во время проверки Вашего профиля, администрация сервера обнаружит несовпадение данных, Ваша заявка будет аннулирована." + '\n' +"Будущим клиентам будет видна ваша анкета кроме контактов. " + '\n'+ "Ваша анкета составлена верно?", reply_markup=keyboard_answer)  
                 elif type_ == 1:
                     bot.send_message(message.from_user.id, 
@@ -1575,7 +1636,8 @@ def main():
                                      + "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' 
                                      + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' 
                                      + "💰 9. Стоимость рекламного поста: "+ price_advertiser + '\n' 
-                                     + "♻️ 10. Возможность бартера при разнице подписчиков: "+  barter_advertiser+'\n'+'\n' 
+                                     + "♻️ 10. Возможность бартера при разнице подписчиков: "+  barter_advertiser+'\n'
+                                     + "💬 11. Краткая информация о канале/аккаунте:: "+str(inf_advertiser)+'\n'+'\n' 
                                      + "Прошу обратить внимание, если во время проверки Вашего профиля, администрация сервера обнаружит несовпадение данных, Ваша заявка будет аннулирована." + '\n' 
                                      +"Будущим клиентам будет видна ваша анкета кроме контактов. " + '\n'
                                      + "Ваша анкета составлена верно?", 
@@ -1593,6 +1655,7 @@ def main():
                                      + "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' 
                                      + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' 
                                      + "💰 9. Стоимость рекламного поста: "+ qwe[0] + '\n' + "💰 Стоимость сторис: " +qwe[1]+'\n' + "💰 Стоимость вечного поста: " + qwe[2] + '\n' 
+                                     + "💬 10. Краткая информация о канале/аккаунте:: "+str(inf_advertiser)+'\n'
                                      +"Прошу обратить внимание, если во время проверки Вашего профиля, администрация сервера обнаружит несовпадение данных, Ваша заявка будет аннулирована." + '\n' 
                                      +"Будущим клиентам будет видна ваша анкета кроме контактов. " + '\n'
                                      + "Ваша анкета составлена верно?", 
@@ -1608,7 +1671,8 @@ def main():
                                      + "📱 6.Ваши контакты: " + contacts_advertiser + '\n'
                                      + "📎  7.Категория Вашего профиля: " + self_category_ad + '\n' 
                                      + "📄 8.Категория рекламы: " + category_ad_advertiser + '\n' 
-                                     + "💰 9. Стоимость рекламного поста: "+ price_advertiser + '\n' + '\n' 
+                                     + "💰 9. Стоимость рекламного поста: "+ price_advertiser + '\n' 
+                                     + "💬 10. Краткая информация о канале/аккаунте:: "+str(inf_advertiser)+'\n'+ '\n' 
                                      + "Прошу обратить внимание, если во время проверки Вашего профиля, администрация сервера обнаружит несовпадение данных, Ваша заявка будет аннулирована." 
                                      + '\n' +"Будущим клиентам будет видна ваша анкета кроме контактов. " + '\n'
                                      + "Ваша анкета составлена верно?", 
@@ -1637,7 +1701,7 @@ def main():
             
             stroka=get_stroka_po_ankete(id_anketa,all_base)
             
-            type_=int(sheet["L"+stroka].value)
+            type_=int(sheet["O"+stroka].value)
             network_type_advertiser=sheet["B"+stroka].value
             name_advertiser=sheet["C"+stroka].value
             subscribers_advertiser=sheet["D"+stroka].value
@@ -1648,6 +1712,7 @@ def main():
             category_ad_advertiser=sheet["I"+stroka].value
             price_advertiser=sheet["J"+stroka].value
             barter_advertiser=sheet["K"+stroka].value
+            inf_advertiser=sheet["L"+stroka].value
             
             bot_checker.send_message(405027580, 
                                      
@@ -1662,6 +1727,7 @@ def main():
                                      + "📎 7.Категория Вашего профиля: " + str(self_category_ad) + '\n' 
                                      + "📄 8.Категория рекламы: " + str(category_ad_advertiser) + '\n' 
                                      + "💰 9. Стоимость рекламного поста: "+ str(price_advertiser) + '\n'
+                                     + "💬 10. Краткая информация о канале/аккаунте:: "+str(inf_advertiser)+'\n'
                                      +"Возможность бартера при разнице подписчиков: "+  str(barter_advertiser)+'\n'
                                      +"Ранее у данного пользователя было "+str(kol_ankets(get_id_po_ankete(id_anketa,all_base)))+" одобренных анкет",
                                      reply_markup=keyboard_admin)
@@ -1678,6 +1744,7 @@ def main():
                                      + "📎 7.Категория Вашего профиля: " + str(self_category_ad) + '\n' 
                                      + "📄 8.Категория рекламы: " + str(category_ad_advertiser) + '\n' 
                                      + "💰 9. Стоимость рекламного поста: "+ str(price_advertiser) + '\n'
+                                     + "💬 10. Краткая информация о канале/аккаунте:: "+str(inf_advertiser)+'\n'
                                      +"Возможность бартера при разнице подписчиков: "+  str(barter_advertiser)+'\n'
                                      +"Ранее у данного пользователя было "+str(kol_ankets(get_id_po_ankete(id_anketa,all_base)))+" одобренных анкет",
                                      reply_markup=keyboard_admin )
@@ -1697,6 +1764,7 @@ def main():
             info_buyer = sheet["F"+stroka].value
             category_ad_buyer = sheet["G"+stroka].value  
             price_buyer=sheet["H"+stroka].value
+            inf_buyer=sheet["I"+stroka].value
             
             bot_checker.send_message(741710024, 
                                      "Заявка №"+str(id_anketa)+'\n'
@@ -1708,6 +1776,8 @@ def main():
                                      + "🗺 5.Инфомация об аудитории: " + str(info_buyer) + '\n' 
                                      + "📄 6.Категория рекламы: " + str(category_ad_buyer) + '\n'
                                      + "💰 7. Максимальная стоимость рекламы: "+ str(price_buyer) + '\n'
+                                     + "💬 8. Краткая информация о канале/аккаунте: "+ str(inf_buyer) + '\n'
+                                     
                                      +"Ранее у данного пользователя было "+str(kol_ankets(get_id_po_ankete(id_anketa,all_base)))+" одобренных анкет",
                                      reply_markup=keyboard_admin)
             
@@ -1721,6 +1791,7 @@ def main():
                                      + "🗺 5.Инфомация об аудитории: " + str(info_buyer) + '\n' 
                                      + "📄 6.Категория рекламы: " + str(category_ad_buyer) + '\n'
                                      + "💰 7. Максимальная стоимость рекламы: "+ str(price_buyer) + '\n'
+                                     + "💬 8. Краткая информация о канале/аккаунте: "+ str(inf_buyer) + '\n'
                                      +"Ранее у данного пользователя было "+str(kol_ankets(get_id_po_ankete(id_anketa,all_base)))+" одобренных анкет",
                                      reply_markup=keyboard_admin)
             
@@ -1781,7 +1852,8 @@ def main():
             category_ad_advertiser=sheet["I"+stroka].value
             price_advertiser=sheet["J"+stroka].value        
             barter_advertiser=sheet["K"+stroka].value
-             
+            inf_advertiser=sheet["L"+stroka].value
+            
             number_advertiser=sheet["M"+stroka].value
             
             edit_advertiser = message.text
@@ -1807,6 +1879,8 @@ def main():
                         sheet["J"+stroka].value=edit_advertiser
                     if number_advertiser == '10':
                         sheet["K"+stroka].value=edit_advertiser
+                    if number_advertiser == '11':
+                        sheet["L"+stroka].value=edit_advertiser                    
                     wb.save(all_base)
                     
                     if int(barter_advertiser)==0:
@@ -1821,6 +1895,7 @@ def main():
                                          + "📎 7.Категория Вашего профиля: " + str(sheet["H"+stroka].value) + '\n' 
                                          + "📄 8.Категория рекламы: " + str(sheet["I"+stroka].value) + '\n'
                                          + "💰 9.Цена рекламы:"+str(sheet["J"+stroka].value)+'\n'
+                                         + "💬 10. Краткая информация о канале/аккаунте:"+str(sheet["L"+stroka].value)+'\n'
                                          + "Ваша анкета составлена верно?", 
                                          reply_markup=keyboard_answer)
                         
@@ -1837,6 +1912,7 @@ def main():
                                          + "📄 8.Категория рекламы: " + str(sheet["I"+stroka].value) + '\n'
                                          + "💰 9.Цена рекламы:"+str(sheet["J"+stroka].value)+'\n'
                                          + "♻ 10.Максимальное отличие подписчиков"+str(sheet["K"+stroka].value)+'\n'
+                                         + "💬 11. Краткая информация о канале/аккаунте:"+str(sheet["L"+stroka].value)+'\n'
                                          + "Ваша анкета составлена верно?", 
                                          reply_markup=keyboard_answer)
                     #bot.register_next_step_handler(message, checking_advertiser)   
@@ -1873,6 +1949,7 @@ def main():
             info_buyer = sheet["F"+stroka].value
             category_ad_buyer = sheet["G"+stroka].value  
             price_buyer=sheet["H"+stroka].value
+            inf_buyer=sheet["I"+stroka].value
             
             number_buyer=sheet["M"+stroka].value
             
@@ -1893,6 +1970,9 @@ def main():
                         sheet["G"+stroka].value  =edit_buyer  
                     if number_buyer == '7':
                         sheet["H"+stroka].value = editing_buyer
+
+                    if number_buyer == '8':
+                        sheet["I"+stroka].value = editing_buyer                    
                     wb.save(all_base)
                     bot.send_message(message.from_user.id, "Ваша анкета: " + '\n'
                                      + "🌐 1.Социальная сеть:" + str(sheet["B"+stroka].value) + '\n' 
@@ -1902,6 +1982,8 @@ def main():
                                      + "🗺 5.Инфомация об аудитории: " + str(sheet["F"+stroka].value) + '\n' 
                                      + "📄 6.Категория рекламы: " + str(sheet["G"+stroka].value) + '\n' 
                                      + "💰 7. Максимальная стоимость рекламы: "+ str(sheet["H"+stroka].value) + '\n' 
+                                     + "💬 8. Краткая информация о канале/аккаунте: "+ str(sheet["I"+stroka].value) + '\n' 
+                                     
                                      + "Прошу обратить внимание, если во время проверки Вашего профиля, администрация сервера обнаружит несовпадение данных, Ваша заявка будет аннулирована." 
                                      + '\n' + "Ваша анкета составлена верно?", reply_markup=keyboard_answer)
                     #bot.register_next_step_handler(message, checking_buyer)
@@ -1912,7 +1994,7 @@ def main():
                 bot.send_message(message.from_user.id,"Ошибка! Введите пункт еще раз!",reply_markup = keyboard_start_again)
                 bot.register_next_step_handler(message, number_edit_buyer) 
         else:
-            get_start_message(message)                
+            get_start_message(message)                   
             
     
     thread1 = Thread(target=bot.polling, args=())
