@@ -13,8 +13,32 @@ global all_base
 global con_base
 global test_day
 global comm_admin
+"""
+bot=None
+bot_checker=None
 
+def Thread_Bot1():
+    global bot1
+    while True:
+        try:
+            bot.polling()
+        except:
+            continue
+            #Launch_Bot1()
+            #raise Exception("Bot 1 crashed")
+
+#Thread for Bot 2
+def Thread_Bot2():
+    global bot2
+    while True:
+        try:
+            bot_checker.polling()
+        except:
+            continue
+"""
 def main():
+    #global bot
+    #global bot_checker
     test_day=14
     admin=[405027580,741710024]
     comm_admin=str("ВКЛЮЧИТЬ БОТА:\non (например, on)\n\n"+
@@ -32,9 +56,9 @@ def main():
     all_base='C:/Users/nikita/Desktop/test/all.xlsx'
     con_base='C:/Users/nikita/Desktop/test/contact.xlsx'
     """
-    osn_base='bot_bir1/database.xlsx'
-    all_base='bot_bir1/all.xlsx'
-    con_base='bot_bir1/contact.xlsx'
+    osn_base='bot_bir2/database.xlsx'
+    all_base='bot_bir2/all.xlsx'
+    con_base='bot_bir2/contact.xlsx'
     
     bot=telebot.TeleBot('1292714271:AAFto5D4qOOmTbRDfYVY28DQguWr3FJWKlc')   #бот для принятия анкет и для отправки других
     bot_checker = telebot.TeleBot('1147234538:AAHFUcJE44cGiFFBISV5YCtK8TggG2Jf9ps') #бот для проверки анкет
@@ -1003,19 +1027,22 @@ def main():
             return False
         return True
     
-    def add_or_check_id(id,anketa):
+    def add_or_check_id(id,anketa,usr):
         wb = openpyxl.load_workbook(filename = con_base)
         sheet= wb["main"]     
         if get_last_anketa_po_tgid(id)==0:
             #print("test!!!","B"+str(sheet["Z1"].value))
             sheet["A"+str(sheet["Z1"].value)].value=str(id)
             sheet["B"+str(sheet["Z1"].value)].value=str(anketa)
+            sheet["I"+str(sheet["Z1"].value)].value=str(usr)
+            
             sheet["Z1"].value=int(sheet["Z1"].value)+1
             wb.save(con_base)
         else:
             for i in range(2,int(sheet["Z1"].value)):
                 if sheet["A"+str(i)].value==str(id):
                     sheet["B"+str(i)].value=anketa
+                    sheet["I"+str(i)].value=usr
                     wb.save(con_base)   
                     
     def get_stroka_po_ankete(anketa,database):
@@ -1140,8 +1167,9 @@ def main():
                 sheet["Z1"].value=str(a+1)
                 wb.save(all_base)
                 
-                add_or_check_id(message.from_user.id,anketa)
+                add_or_check_id(message.from_user.id,anketa,message.from_user.username)
                 
+
                 wb1 = openpyxl.load_workbook(filename= con_base)
                 sheet1=wb1["main"]       
                 #print(sheet1["B2"].value)
@@ -1157,7 +1185,7 @@ def main():
                 sheet["Q"+str(a)].value=anketa
                 sheet["Z1"].value=str(a+1)
                 wb.save(all_base)
-                add_or_check_id(message.from_user.id,anketa)
+                add_or_check_id(message.from_user.id,anketa,message.from_user.username)
                 
                 bot.send_message(message.from_user.id, "🌐  Пожалуйста, напишите, в какой социальной сети Вы хотите купить рекламу. ", reply_markup=keyboard_network_type)
                 bot.register_next_step_handler(message, get_network_type_buyer)
@@ -1169,11 +1197,12 @@ def main():
     def get_network_type_advertiser(message): 
         if check_com(message)==0:
             network_type_advertiser = str(message.text)
-            
             wb = openpyxl.load_workbook(filename = all_base)
             sheet=wb["0"]    
             anketa=get_last_anketa_po_tgid(message.from_user.id)
-            sheet["B"+get_stroka_po_ankete(anketa,all_base)].value=network_type_advertiser
+            #print("----------",network_type_advertiser,get_stroka_po_ankete(anketa,all_base))
+            
+            sheet["B"+str(get_stroka_po_ankete(anketa,all_base))].value=network_type_advertiser
             wb.save(all_base)
             
             bot.send_message(message.from_user.id, "👨‍💻 Введите никнейм вашего канала / аккаунта / профиля.",reply_markup = keyboard_start_again)
@@ -1475,7 +1504,14 @@ def main():
                 sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
                 
                 wb.save(all_base)   
-                bot.register_next_step_handler(message, price_adv)            
+                bot.register_next_step_handler(message, price_adv)       
+            elif network_type_advertiser == "Facebook":
+                type_ = 1
+                bot.send_message(message.from_user.id, "💰 Введите стоимость рекламного поста(пожалуйста, вводите цену в рублях)",reply_markup = keyboard_start_again)
+                sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
+                
+                wb.save(all_base)               
+                bot.register_next_step_handler(message, price_adv)   
             if type_==0:
                 bot.send_message(message.from_user.id, "Вы ввели ошибочные данные. Начните сначала.",reply_markup = keyboard_start_again)
                 return 0
@@ -1578,7 +1614,7 @@ def main():
             barter_advertiser = str(message.text)
             if not test_int(barter_advertiser):
                 bot.send_message(message.from_user.id,"Ваш ответ засчитан как 0")
-            barter_advertiser=0
+                barter_advertiser=0
             wb = openpyxl.load_workbook(filename = all_base)
             sheet=wb["0"]    
             anketa=get_last_anketa_po_tgid(message.from_user.id)
@@ -1855,74 +1891,108 @@ def main():
             inf_advertiser=sheet["L"+stroka].value
             
             number_advertiser=sheet["M"+stroka].value
-            
+            t=0
             edit_advertiser = message.text
-            if test_int(number_advertiser):
-                if int(number_advertiser)>=1 and int(number_advertiser)<=8:
-                    if number_advertiser == '1':
-                        sheet["B"+stroka].value = edit_advertiser
-                    if number_advertiser == '2':
-                        sheet["C"+stroka].value=edit_advertiser
-                    if number_advertiser == '3':
-                        sheet["D"+stroka].value=edit_advertiser
-                    if number_advertiser == '4':
-                        sheet["E"+stroka].value = edit_advertiser
-                    if number_advertiser == '5':
-                        sheet["F"+stroka].value=edit_advertiser
-                    if number_advertiser == '6':
-                        sheet["G"+stroka].value=edit_advertiser
-                    if number_advertiser == '7':
-                        sheet["H"+stroka].value=edit_advertiser
-                    if number_advertiser == '8':
-                        sheet["I"+stroka].value=edit_advertiser
-                    if number_advertiser == '9':
-                        sheet["J"+stroka].value=edit_advertiser
-                    if number_advertiser == '10':
-                        sheet["K"+stroka].value=edit_advertiser
-                    if number_advertiser == '11':
-                        sheet["L"+stroka].value=edit_advertiser                    
-                    wb.save(all_base)
-                    
-                    if int(barter_advertiser)==0:
-                        bot.send_message(message.from_user.id, 
-                                         "Ваша анкета: " + '\n' 
-                                         + "🌐 1.Социальная сеть:" + str(sheet["B"+stroka].value) + '\n' 
-                                         + "👨‍💻 2.Никнейм: " + str(sheet["C"+stroka].value) + '\n' 
-                                         + "👥 3.Количество подписчиков: " + str(sheet["D"+stroka].value) + '\n' 
-                                         + "📊 4.Статистика профиля: " + str(sheet["E"+stroka].value) + '\n' 
-                                         + "🗺 5.Инфомация об аудитории: " + str(sheet["F"+stroka].value) + '\n' 
-                                         + "📱 6.Ваши контакты: " + str(sheet["G"+stroka].value) + '\n' 
-                                         + "📎 7.Категория Вашего профиля: " + str(sheet["H"+stroka].value) + '\n' 
-                                         + "📄 8.Категория рекламы: " + str(sheet["I"+stroka].value) + '\n'
-                                         + "💰 9.Цена рекламы:"+str(sheet["J"+stroka].value)+'\n'
-                                         + "💬 10. Краткая информация о канале/аккаунте:"+str(sheet["L"+stroka].value)+'\n'
-                                         + "Ваша анкета составлена верно?", 
-                                         reply_markup=keyboard_answer)
-                        
+            bot.send_message(741710024,barter_advertiser)
+            
+    
+            if int(barter_advertiser)==0:
+                if test_int(number_advertiser):
+                    if int(number_advertiser)>=1 and int(number_advertiser)<=10:
+                        if number_advertiser == '1':
+                            sheet["B"+stroka].value = edit_advertiser
+                        if number_advertiser == '2':
+                            sheet["C"+stroka].value=edit_advertiser
+                        if number_advertiser == '3':
+                            sheet["D"+stroka].value=edit_advertiser
+                        if number_advertiser == '4':
+                            sheet["E"+stroka].value = edit_advertiser
+                        if number_advertiser == '5':
+                            sheet["F"+stroka].value=edit_advertiser
+                        if number_advertiser == '6':
+                            sheet["G"+stroka].value=edit_advertiser
+                        if number_advertiser == '7':
+                            sheet["H"+stroka].value=edit_advertiser
+                        if number_advertiser == '8':
+                            sheet["I"+stroka].value=edit_advertiser
+                        if number_advertiser == '9':
+                            sheet["J"+stroka].value=edit_advertiser
+                        if number_advertiser == '10':
+                            sheet["L"+stroka].value=edit_advertiser
+
+                        t+=1
                     else:
-                        bot.send_message(message.from_user.id, 
-                                         "Ваша анкета: " + '\n' 
-                                         + "🌐 1.Социальная сеть:" + str(sheet["B"+stroka].value) + '\n' 
-                                         + "👨‍💻 2.Никнейм: " + str(sheet["C"+stroka].value) + '\n' 
-                                         + "👥 3.Количество подписчиков: " + str(sheet["D"+stroka].value) + '\n' 
-                                         + "📊 4.Статистика профиля: " + str(sheet["E"+stroka].value) + '\n' 
-                                         + "🗺 5.Инфомация об аудитории: " + str(sheet["F"+stroka].value) + '\n' 
-                                         + "📱 6.Ваши контакты: " + str(sheet["G"+stroka].value) + '\n' 
-                                         + "📎 7.Категория Вашего профиля: " + str(sheet["H"+stroka].value) + '\n' 
-                                         + "📄 8.Категория рекламы: " + str(sheet["I"+stroka].value) + '\n'
-                                         + "💰 9.Цена рекламы:"+str(sheet["J"+stroka].value)+'\n'
-                                         + "♻ 10.Максимальное отличие подписчиков"+str(sheet["K"+stroka].value)+'\n'
-                                         + "💬 11. Краткая информация о канале/аккаунте:"+str(sheet["L"+stroka].value)+'\n'
-                                         + "Ваша анкета составлена верно?", 
-                                         reply_markup=keyboard_answer)
-                    #bot.register_next_step_handler(message, checking_advertiser)   
+                        bot.send_message(message.from_user.id,"Ошибка! Введите пункт еще раз!",reply_markup = keyboard_start_again)
+                        bot.register_next_step_handler(message,number_edit_advertiser) 
                 else:
                     bot.send_message(message.from_user.id,"Ошибка! Введите пункт еще раз!",reply_markup = keyboard_start_again)
-                    bot.register_next_step_handler(message, number_edit_advertiser)  
+                    bot.register_next_step_handler(message,number_edit_advertiser) 
+                if t!=0:
+                    bot.send_message(message.from_user.id, 
+                                     "Ваша анкета: " + '\n' 
+                                     + "🌐 1.Социальная сеть:" + str(sheet["B"+stroka].value) + '\n' 
+                                     + "👨‍💻 2.Никнейм: " + str(sheet["C"+stroka].value) + '\n' 
+                                     + "👥 3.Количество подписчиков: " + str(sheet["D"+stroka].value) + '\n' 
+                                     + "📊 4.Статистика профиля: " + str(sheet["E"+stroka].value) + '\n' 
+                                     + "🗺 5.Инфомация об аудитории: " + str(sheet["F"+stroka].value) + '\n' 
+                                     + "📱 6.Ваши контакты: " + str(sheet["G"+stroka].value) + '\n' 
+                                     + "📎 7.Категория Вашего профиля: " + str(sheet["H"+stroka].value) + '\n' 
+                                     + "📄 8.Категория рекламы: " + str(sheet["I"+stroka].value) + '\n'
+                                     + "💰 9.Цена рекламы:"+str(sheet["J"+stroka].value)+'\n'
+                                     + "💬 10. Краткая информация о канале/аккаунте:"+str(sheet["L"+stroka].value)+'\n'
+                                     + "Ваша анкета составлена верно?", 
+                                     reply_markup=keyboard_answer)
+                
             else:
-                bot.send_message(message.from_user.id,"Ошибка! Введите пункт еще раз!",reply_markup = keyboard_start_again)
-                bot.register_next_step_handler(message, number_edit_advertiser)      
-            
+                if test_int(number_advertiser):
+                    if int(number_advertiser)>=1 and int(number_advertiser)<=11 and int(number_advertiser)!=1 and int(number_advertiser)!=7 and int(number_advertiser)!=8:
+                        if number_advertiser == '1': #-
+                            sheet["B"+stroka].value = edit_advertiser
+                        if number_advertiser == '2':
+                            sheet["C"+stroka].value=edit_advertiser
+                        if number_advertiser == '3':
+                            sheet["D"+stroka].value=edit_advertiser
+                        if number_advertiser == '4':
+                            sheet["E"+stroka].value = edit_advertiser
+                        if number_advertiser == '5':
+                            sheet["F"+stroka].value=edit_advertiser
+                        if number_advertiser == '6':
+                            sheet["G"+stroka].value=edit_advertiser
+                        if number_advertiser == '7': #-
+                            sheet["H"+stroka].value=edit_advertiser
+                        if number_advertiser == '8': #-
+                            sheet["I"+stroka].value=edit_advertiser
+                        if number_advertiser == '9':
+                            sheet["J"+stroka].value=edit_advertiser
+                        if number_advertiser == '10':
+                            sheet["K"+stroka].value=edit_advertiser
+                        if number_advertiser == '11':
+                            sheet["L"+stroka].value=edit_advertiser                    
+                        wb.save(all_base)    
+                        t+=1
+                    else:
+                        bot.send_message(message.from_user.id,"Ошибка! Введите пункт еще раз!",reply_markup = keyboard_start_again)
+                        bot.register_next_step_handler(message,number_edit_advertiser) 
+                else:
+                    bot.send_message(message.from_user.id,"Ошибка! Введите пункт еще раз!",reply_markup = keyboard_start_again)
+                    bot.register_next_step_handler(message,number_edit_advertiser) 
+                if t!=0:
+                    bot.send_message(message.from_user.id, 
+                                     "Ваша анкета: " + '\n' 
+                                     + "🌐 1.Социальная сеть:" + str(sheet["B"+stroka].value) + '\n' 
+                                     + "👨‍💻 2.Никнейм: " + str(sheet["C"+stroka].value) + '\n' 
+                                     + "👥 3.Количество подписчиков: " + str(sheet["D"+stroka].value) + '\n' 
+                                     + "📊 4.Статистика профиля: " + str(sheet["E"+stroka].value) + '\n' 
+                                     + "🗺 5.Инфомация об аудитории: " + str(sheet["F"+stroka].value) + '\n' 
+                                     + "📱 6.Ваши контакты: " + str(sheet["G"+stroka].value) + '\n' 
+                                     + "📎 7.Категория Вашего профиля: " + str(sheet["H"+stroka].value) + '\n' 
+                                     + "📄 8.Категория рекламы: " + str(sheet["I"+stroka].value) + '\n'
+                                     + "💰 9.Цена рекламы:"+str(sheet["J"+stroka].value)+'\n'
+                                     + "♻ 10.Максимальное отличие подписчиков:"+str(sheet["K"+stroka].value)+'\n'
+                                     + "💬 11. Краткая информация о канале/аккаунте:"+str(sheet["L"+stroka].value)+'\n'
+                                     + "Ваша анкета составлена верно?", 
+                                     reply_markup=keyboard_answer)
+
         else:
             get_start_message(message)            
             
@@ -1955,8 +2025,8 @@ def main():
             
             edit_buyer = message.text
             if test_int(number_buyer):
-                if int(number_buyer)>=1 and int(number_buyer)<=6:    
-                    if number_buyer == '1':
+                if int(number_buyer)>=1 and int(number_buyer)<=8 and int(number_buyer)!=1 and int(number_buyer)!=6:    
+                    if number_buyer == '1': #-
                         sheet["B"+stroka].value=edit_buyer
                     if number_buyer == '2':
                         sheet["C"+stroka].value=edit_buyer
@@ -1966,13 +2036,12 @@ def main():
                         sheet["E"+stroka].value=edit_buyer
                     if number_buyer == '5':
                         sheet["F"+stroka].value=edit_buyer
-                    if number_buyer == '6':
-                        sheet["G"+stroka].value  =edit_buyer  
+                    if number_buyer == '6': #-
+                        sheet["G"+stroka].value =edit_buyer  
                     if number_buyer == '7':
-                        sheet["H"+stroka].value = editing_buyer
-
+                        sheet["H"+stroka].value = edit_buyer
                     if number_buyer == '8':
-                        sheet["I"+stroka].value = editing_buyer                    
+                        sheet["I"+stroka].value = edit_buyer                    
                     wb.save(all_base)
                     bot.send_message(message.from_user.id, "Ваша анкета: " + '\n'
                                      + "🌐 1.Социальная сеть:" + str(sheet["B"+stroka].value) + '\n' 
@@ -1994,8 +2063,20 @@ def main():
                 bot.send_message(message.from_user.id,"Ошибка! Введите пункт еще раз!",reply_markup = keyboard_start_again)
                 bot.register_next_step_handler(message, number_edit_buyer) 
         else:
-            get_start_message(message)                   
-            
+            get_start_message(message)   
+    """                
+    thread1 = Thread(target=Thread_Bot1, args=())
+    thread1.setDaemon(True)
+    thread1.start()    
+    thread2 = Thread(target=Thread_Bot2, args=())
+    thread2.setDaemon(True)
+    thread2.start()      
+
+main()
+#if main thread ends then threads will end too
+while True:
+    1==1
+"""
     
     thread1 = Thread(target=bot.polling, args=())
     thread2 = Thread(target=bot_checker.polling, args=())
@@ -2003,6 +2084,7 @@ def main():
     thread2.start()
     thread1.join()
     thread2.join()
+    
 def retry():
     try:        
         main()
@@ -2024,3 +2106,4 @@ while a==0:
         try:thread2.join()
         except:pass          
         retry()
+        
