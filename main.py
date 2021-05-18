@@ -60,8 +60,8 @@ def main():
     all_base='bot_bir2/all.xlsx'
     con_base='bot_bir2/contact.xlsx'
     
-    bot=telebot.TeleBot('1292714271:AAFto5D4qOOmTbRDfYVY28DQguWr3FJWKlc')   #бот для принятия анкет и для отправки других
-    bot_checker = telebot.TeleBot('1147234538:AAHFUcJE44cGiFFBISV5YCtK8TggG2Jf9ps') #бот для проверки анкет
+    bot=telebot.TeleBot('TOKEN')   #бот для принятия анкет и для отправки других
+    bot_checker = telebot.TeleBot('TOKEN') #бот для проверки анкет
     
     keyboard_start = telebot.types.ReplyKeyboardMarkup(True, True)    #клавиатура для определения типа покупателя
     keyboard_start.row("📝 Заполнить анкету 📝")
@@ -1510,7 +1510,8 @@ def main():
                 bot.send_message(message.from_user.id, "💰 Введите стоимость рекламного поста(пожалуйста, вводите цену в рублях)",reply_markup = keyboard_start_again)
                 sheet["O"+get_stroka_po_ankete(anketa,all_base)].value=type_
                 
-                wb.save(all_base)               
+                wb.save(all_base)   
+            
                 bot.register_next_step_handler(message, price_adv)   
             if type_==0:
                 bot.send_message(message.from_user.id, "Вы ввели ошибочные данные. Начните сначала.",reply_markup = keyboard_start_again)
